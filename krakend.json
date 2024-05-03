@@ -1,0 +1,82 @@
+{
+  "version": 3,
+  "port": 8088,
+  "extra_config": {
+    "github.com/devopsfaith/krakend-jose/validator": {
+      "alg": "RS256",
+      "audience": ["http://your_audience"],
+      "issuer": "http://localhost:5004",
+      "jwk-url": "http://localhost:5004/.well-known/jwks.json",
+      "disable_jwk_security": true
+    }
+  },
+  "endpoints": [
+    {
+      "endpoint": "/api/products",
+      "method": "GET",
+      "backend": [
+        {
+          "host": ["http://product-service:5001"],
+          "url_pattern": "/products"
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/products",
+      "method": "POST",
+      "backend": [
+        {
+          "host": ["http://product-service:5001"],
+          "url_pattern": "/products",
+          "encoding": "json"
+        }
+      ],
+      "extra_config": {
+        "github.com/devopsfaith/krakend/encoding": {
+          "return_errors": true
+        }
+      }
+    },
+    {
+      "endpoint": "/api/orders",
+      "method": "GET",
+      "backend": [
+        {
+          "host": ["http://order-service:5002"],
+          "url_pattern": "/orders"
+        }
+      ],
+      "extra_config": {
+        "qos/ratelimit/router": {
+          "max_rate": 1000
+        }
+      }
+    },
+    {
+      "endpoint": "/api/users",
+      "method": "GET",
+      "backend": [
+        {
+          "host": ["http://user-service:5003"],
+          "url_pattern": "/users"
+        }
+      ]
+    },
+    {
+      "endpoint": "/api/auth",
+      "method": "POST",
+      "backend": [
+        {
+          "host": ["http://auth-service:5004"],
+          "url_pattern": "/auth/login",
+          "encoding": "json"
+        }
+      ],
+      "extra_config": {
+        "github.com/devopsfaith/krakend/encoding": {
+          "return_errors": true
+        }
+      }
+    }
+  ]
+}

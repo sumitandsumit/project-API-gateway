@@ -1,0 +1,62 @@
+version: '3'
+services:
+  product-service:
+    build:
+      context: ./product        # Directory containing Dockerfile
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./product:/app          # Mount the application code into the container
+    environment:
+      - FLASK_ENV=development   # Set Flask to run in development mode
+      - FLASK_APP=product_s.py     # Set the FLASK_APP environment variable
+    command: flask run --host=0.0.0.0 --port=5001
+
+  order-service:
+    build:
+      context: ./order
+      dockerfile: Dockerfile
+    ports:
+      - "5002:5002"
+    volumes:
+      - ./order:/app
+    environment:
+      - FLASK_ENV=development
+      - FLASK_APP=order_s.py
+    command: flask run --host=0.0.0.0 --port=5002
+
+  user-service:
+    build:
+      context: ./user
+      dockerfile: Dockerfile
+    ports:
+      - "5003:5003"
+    volumes:
+      - ./user:/app
+    environment:
+      - FLASK_ENV=development
+      - FLASK_APP=user_s.py
+    command: flask run --host=0.0.0.0 --port=5003
+
+  auth-service:
+    build:
+      context: ./auth
+      dockerfile: Dockerfile
+    ports:
+      - "5004:5004"
+    volumes:
+      - ./auth:/app
+    environment:
+      - FLASK_ENV=development
+      - FLASK_APP=auth_s.py
+    command: flask run --host=0.0.0.0 --port=5004
+
+  krakend:
+    image: devopsfaith/krakend
+    environment:
+      - DEBUG=1
+    ports:
+      - "8088:8088"
+    volumes:
+      - ./krakend.json:/etc/krakend/krakend.json
